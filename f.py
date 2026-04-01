@@ -1,7 +1,7 @@
 import os
-from human_eval.data import read_problems
-from human_eval.data import write_jsonl
 import random
+
+from human_eval.data import read_problems, write_jsonl
 
 
 def get_samples(num_samples_per_task, _get_code_from_api) -> list:
