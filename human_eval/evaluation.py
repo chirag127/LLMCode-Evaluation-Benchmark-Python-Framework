@@ -1,12 +1,13 @@
-from collections import defaultdict, Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Union, Iterable, Dict
 import itertools
+from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import List, Union
 
 import numpy as np
 import tqdm
 
-from human_eval.data import HUMAN_EVAL, read_problems, stream_jsonl, write_jsonl
+from human_eval.data import (HUMAN_EVAL, read_problems, stream_jsonl,
+                             write_jsonl)
 from human_eval.execution import check_correctness
 
 

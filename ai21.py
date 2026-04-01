@@ -3,8 +3,9 @@ This module contains the code for the code generation model codex.
 """
 
 import requests
-from f import get_samples, write_jsonl_in_folder
 from apikey import AI21_KEY
+
+from f import get_samples, write_jsonl_in_folder
 
 
 def generate_one_completion(prompt):
@@ -73,7 +74,9 @@ def generate_one_completion(prompt):
     data = completions["data"]
     text = data["text"]
     print(text)
-    print("____________________________________________________________________________________")
+    print(
+        "____________________________________________________________________________________"
+    )
     return text
 
 
