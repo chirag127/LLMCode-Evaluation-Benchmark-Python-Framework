@@ -38,3 +38,17 @@ htmlcov/
 # Platform Specific
 .DS_Store
 Thumbs.db
+
+# Provider run outputs (use Releases; keep data/ inputs)
+ai21/
+yurts/
+cg/
+cd/
+cohere/
+*.jsonl_results.jsonl
+
+# Local secrets file
+apikey.py
+
+# Release zip
+sample-runs.zip

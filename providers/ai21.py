@@ -1,17 +1,21 @@
 """
-This module contains the code for the code generation model codex.
+AI21 Labs provider — runs HumanEval against the j1-large model.
+
+Required env vars:
+  AI21_KEY  — "Bearer <token>" authorization header value
 """
 
+import os
+
 import requests
-from apikey import AI21_KEY
+from providers.helpers import get_samples, write_jsonl_in_folder
 
-from f import get_samples, write_jsonl_in_folder
+NUM_SAMPLES_PER_TASK = 11
 
 
-def generate_one_completion(prompt):
-    """
-    This function generates one completion for a given prompt.
-    """
+def generate_one_completion(prompt: str) -> str:
+    """Generate one completion via AI21 j1-large."""
+    ai21_key = os.environ["AI21_KEY"]
     response = requests.post(
         "https://api.ai21.com/studio/v1/j1-large/complete",
         timeout=60,
@@ -19,7 +23,7 @@ def generate_one_completion(prompt):
             "authority": "api.ai21.com",
             "accept": "application/json",
             "accept-language": "en-US,en;q=0.9",
-            "authorization": AI21_KEY,
+            "authorization": ai21_key,
             "content-type": "application/json",
             "dnt": "1",
             "origin": "https://studio.ai21.com",
@@ -67,34 +71,22 @@ def generate_one_completion(prompt):
             },
         },
     )
-
     response = response.json()
-
-    completions = response["completions"][0]
-    data = completions["data"]
-    text = data["text"]
+    text = response["completions"][0]["data"]["text"]
     print(text)
-    print(
-        "____________________________________________________________________________________"
-    )
+    print("-" * 84)
     return text
 
 
-NUM_SAMPLES_PER_TASK = 11
-
-
 def main() -> None:
-    """
-    This function is the main function for the code generation model codegeex.
-    """
-    samples = get_samples(
-        num_samples_per_task=NUM_SAMPLES_PER_TASK,
-        _get_code_from_api=generate_one_completion,
-    )
-    print(samples)
-    write_jsonl_in_folder("ai21", samples)
+    """Run HumanEval against AI21 j1-large and write results to ai21/."""
+    for _ in range(10):
+        samples = get_samples(
+            num_samples_per_task=NUM_SAMPLES_PER_TASK,
+            _get_code_from_api=generate_one_completion,
+        )
+        write_jsonl_in_folder("ai21", samples)
 
 
 if __name__ == "__main__":
-    for _ in range(10):
-        main()
+    main()

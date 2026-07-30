@@ -1,14 +1,17 @@
 """
-This module contains the code for the code generation model codex.
+Yurts provider — runs HumanEval against a self-hosted Yurts 7B model endpoint.
+
+No API key required; hits the public playground endpoint directly.
 """
 
 import requests
+from providers.helpers import get_samples, write_jsonl_in_folder
 
-from f import get_samples, write_jsonl_in_folder
+NUM_SAMPLES_PER_TASK = 102
 
 
-def generate_one_completion(prompt):
-
+def generate_one_completion(prompt: str) -> str:
+    """Generate one completion via the Yurts 7B playground endpoint."""
     response = requests.post(
         "https://lb.yurts.ai/models/7b36cc5a-d6e9-4241-aee8-b299fc1280c7-12/prediction",
         headers={
@@ -29,27 +32,17 @@ def generate_one_completion(prompt):
         json={"text": prompt},
     )
     response = response.json()
-    code = response["text"]
-
-    # remove prompt from code and only one time
-    code = code.replace(prompt, "", 1)
-
+    code = response["text"].replace(prompt, "", 1)
     print(code)
     return code
 
 
-NUM_SAMPLES_PER_TASK = 102
-
-
 def main() -> None:
-    """
-    This function is the main function for the code generation model codegeex.
-    """
+    """Run HumanEval against Yurts 7B and write results to yurt/."""
     samples = get_samples(
         num_samples_per_task=NUM_SAMPLES_PER_TASK,
         _get_code_from_api=generate_one_completion,
     )
-    print(samples)
     write_jsonl_in_folder("yurt", samples)
 
 

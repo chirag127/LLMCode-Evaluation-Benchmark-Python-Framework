@@ -1,30 +1,25 @@
 """
-This module contains the code for the code generation model codex.
+OpenAI Cushman/Davinci provider — runs HumanEval against code-davinci-002.
+
+Required env vars:
+  OPENAI_KEY — OpenAI API key
 """
 
+import os
 from time import sleep
 
 import openai
-from apikey import OPENAI_KEY
+from providers.helpers import get_samples, write_jsonl_in_folder
 
-from f import get_samples, write_jsonl_in_folder
-
-openai.api_key = OPENAI_KEY
 NUM_SAMPLES_PER_TASK = 1
 
 
-def generate(prompt):
-    """
-    The generate function takes a prompt as input and returns the generated code.
-    The prompt is a string of text that will be used to generate code. The function
-    returns the generated code as a string.
-    """
-
+def generate(prompt: str) -> str:
+    """Generate one completion via OpenAI code-davinci-002."""
     try:
+        openai.api_key = os.environ["OPENAI_KEY"]
         sleep(3)
-
         response = openai.Completion.create(
-            # model="code-cushman-001",
             model="code-davinci-002",
             prompt=prompt,
             temperature=0.2,
@@ -38,21 +33,16 @@ def generate(prompt):
         code = response.choices[0].text
         print("".join([prompt, code]))
         return code
-
     except Exception as error:  # pylint: disable=broad-except
         print(error)
-        print("Error")
         return ""
 
 
 def main() -> None:
-    """
-    This function is the main function for the code generation model codegeex.
-    """
+    """Run HumanEval against OpenAI code-davinci-002 and write results to cd/."""
     samples = get_samples(
         num_samples_per_task=NUM_SAMPLES_PER_TASK, _get_code_from_api=generate
     )
-    print(samples)
     write_jsonl_in_folder("cd", samples)
 
 
